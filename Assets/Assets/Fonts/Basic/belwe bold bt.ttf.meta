@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 4d7e1f348d87ec34abf9dce3e2ea0b82
+TrueTypeFontImporter:
+  externalObjects: {}
+  serializedVersion: 4
+  fontSize: 16
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontNames:
+  - Belwe Bd BT
+  fallbackFontReferences:
+  - {fileID: 12800000, guid: 3332068dd27e7454aad94e93eafaf773, type: 3}
+  customCharacters: 
+  fontRenderingMode: 0
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  shouldRoundAdvanceValue: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
