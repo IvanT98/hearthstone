@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -61,18 +60,18 @@ public class Card : MonoBehaviour
 
     public void FlipCard()
     {
-        bool isFrontShown = cardFront.activeSelf;
+        bool isBackShown = cardBack.activeSelf;
 
-        if (isFrontShown)
+        if (isBackShown)
         {
-            cardFront.SetActive(false);
-            cardBack.SetActive(true);
+            cardFront.SetActive(true);
+            cardBack.SetActive(false);
             
             return;
         }
         
-        cardFront.SetActive(true);
-        cardBack.SetActive(false);
+        cardFront.SetActive(false);
+        cardBack.SetActive(true);
     }
 
     // Start is called before the first frame update

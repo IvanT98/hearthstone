@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -44,11 +45,12 @@ public class CardDeck : MonoBehaviour
         "Battlecry: Give a minion +2 Attack this turn",
         "Deathrattle: Draw a card"
     });
-    private List<GameObject> _cardsGameObjects;
+    private List<GameObject> _cardsGameObjects = new List<GameObject>();
+    private bool _wereCardsCreated = false;
 
     public bool WereCardsCreated()
     {
-        return _cardsGameObjects.Count >= _maxCards;
+        return _wereCardsCreated;
     }
 
 
@@ -59,31 +61,34 @@ public class CardDeck : MonoBehaviour
             return null;
         }
 
-        return null;
+        GameObject cardInstance = _cardsGameObjects.Last();
+        
+        _cardsGameObjects.RemoveAt(_cardsGameObjects.Count - 1);
+
+        return cardInstance;
     }
 
     private void PopulateDeck()
     {
-        if (!WereCardsCreated() || !_assetManager.WereImagesFetched())
+        if (WereCardsCreated() || !_assetManager.WereImagesFetched())
         {
             return;
         }
 
-        for (int i = 0; i < _maxCards; i++)
-        {
-            GameObject cardInstance = Instantiate(card, new Vector3(0, 0, 0), Quaternion.identity);
-            Card cardComponent = cardInstance.GetComponent<Card>();
+        GameObject cardInstance = Instantiate(card, new Vector2(0, 0), Quaternion.identity);
+        Card cardComponent = cardInstance.GetComponent<Card>();
             
-            cardComponent.SetCardTitle(GetCardTitle());
-            cardComponent.SetCardDescription(GetCardDescription());
-            cardComponent.SetCardImage(_assetManager.GetRandomImage());
-            cardComponent.SetCardMana(GetCardMana());
-            cardComponent.SetCardAttack(GetCardAttack());
-            cardComponent.SetCardHealth(GetCardHealth());
+        cardComponent.SetCardTitle(GetCardTitle());
+        cardComponent.SetCardDescription(GetCardDescription());
+        cardComponent.SetCardImage(_assetManager.GetRandomImage());
+        cardComponent.SetCardMana(GetCardMana());
+        cardComponent.SetCardAttack(GetCardAttack());
+        cardComponent.SetCardHealth(GetCardHealth());
             
-            cardInstance.transform.SetParent(gameObject.transform);
-            _cardsGameObjects.Add(cardInstance);
-        }
+        cardInstance.transform.SetParent(gameObject.transform);
+        
+        _cardsGameObjects.Add(cardInstance);
+        _wereCardsCreated = _cardsGameObjects.Count >= _maxCards;
     }
 
     private string GetCardTitle()
