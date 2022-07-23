@@ -14,6 +14,11 @@ public class AssetManager : MonoBehaviour
 
     public Sprite GetRandomImage()
     {
+        if (_randomImages.Count == 0)
+        {
+            return null;
+        }
+        
         return _randomImages[Utilities.GetRandomListIndex(_randomImages.Count)];
     }
 
