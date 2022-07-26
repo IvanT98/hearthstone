@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,22 +8,21 @@ public class PlayerHand : MonoBehaviour
     public GameObject cardDeckGameObject;
 
     private CardDeck _cardDeck;
-    private List<GameObject> _playerCards = new List<GameObject>();
-    private int _minCards = 4;
-    private int _maxCards = 6;
+    private readonly List<GameObject> _playerCards = new();
+    private const int MinCards = 4;
+    private const int MaxCards = 6;
     private int _maxCardsInHand;
-    private bool _wereCardsRetrieved = false;
-    private bool _isTakingACard = false;
-    private float _cardTransferAnimationSpeed = 1;
-    private float _cardMovementAnimationSpeed = 0.1f;
+    private bool _wereCardsRetrieved;
+    private bool _isTakingACard;
+    private const float CardTransferAnimationSpeed = 1;
+    private const float CardMovementAnimationSpeed = 0.1f;
     private Vector3 _lastCardPosition;
-    private float _cardMarginX = 25;
-    private float _cardMarginY = 10;
+    private const float CardMarginY = 10;
     private Vector3 _cardsMovementPivot;
     private Vector3 _cardsRotationPivot;
-    private bool _randomIterationEnabled = false;
+    private bool _randomIterationEnabled;
     private int _currentlyIteratedCardIndex = -1;
-    private bool _currentlyIterating = false;
+    private bool _currentlyIterating;
 
     public void StartRandomIteration()
     {
@@ -40,7 +38,7 @@ public class PlayerHand : MonoBehaviour
         
         _currentlyIterating = true;
         
-        GameObject cardGameObject = GetNextCard();
+        var cardGameObject = GetNextCard();
     
         if (!cardGameObject)
         {
@@ -50,7 +48,7 @@ public class PlayerHand : MonoBehaviour
             yield break;
         }
     
-        Card card = cardGameObject.GetComponent<Card>();
+        var card = cardGameObject.GetComponent<Card>();
         
         yield return card.SetRandomProperty();
     
@@ -87,7 +85,7 @@ public class PlayerHand : MonoBehaviour
             _currentlyIteratedCardIndex = 0;
         }
         
-        GameObject randomCard = _playerCards[_currentlyIteratedCardIndex];
+        var randomCard = _playerCards[_currentlyIteratedCardIndex];
     
         return randomCard;
     }
@@ -101,7 +99,7 @@ public class PlayerHand : MonoBehaviour
         
         _isTakingACard = true;
 
-        GameObject card = _cardDeck.TakeCard();
+        var card = _cardDeck.TakeCard();
 
         if (!card)
         {
@@ -119,7 +117,7 @@ public class PlayerHand : MonoBehaviour
     
     private IEnumerator MoveCard(GameObject cardObject)
     {
-        Card originalCard = cardObject.GetComponent<Card>();
+        var originalCard = cardObject.GetComponent<Card>();
         
         originalCard.FlipCard();
 
@@ -130,11 +128,10 @@ public class PlayerHand : MonoBehaviour
     
     private IEnumerator RepositionCards()
     {
-        List<GameObject> playerCardsCopies = new List<GameObject>();
+        var playerCardsCopies = new List<GameObject>();
 
-        for (int i = 0; i < _playerCards.Count; i++)
+        foreach (var playerCard in _playerCards)
         {
-            GameObject playerCard = _playerCards[i];
             GameObject playerCardCopy = Instantiate(playerCard, gameObject.transform);
             LayoutElement layoutElement = playerCardCopy.GetComponent<LayoutElement>();
 
@@ -149,36 +146,36 @@ public class PlayerHand : MonoBehaviour
         
         yield return new WaitForSeconds(0.1f);
 
-        for (int i = 0; i < playerCardsCopies.Count; i++)
+        for (var i = 0; i < playerCardsCopies.Count; i++)
         {
-            GameObject playerCardCopy = playerCardsCopies[i];
-            LayoutElement layoutElement = playerCardCopy.GetComponent<LayoutElement>();
+            var playerCardCopy = playerCardsCopies[i];
+            var layoutElement = playerCardCopy.GetComponent<LayoutElement>();
 
             layoutElement.ignoreLayout = true;
             
-            float cardMarginY = GetCardMarginY(i, _playerCards.Count, _cardMarginY);
-            Vector3 cardPosition = playerCardCopy.transform.position;
+            var cardMarginY = GetCardMarginY(i, _playerCards.Count, CardMarginY);
+            var cardPosition = playerCardCopy.transform.position;
             
             playerCardCopy.transform.position = new Vector3(cardPosition.x, cardPosition.y + cardMarginY, 0);
         }
 
-        for (int i = 0; i < playerCardsCopies.Count; i++)
+        for (var i = 0; i < playerCardsCopies.Count; i++)
         {
-            GameObject playerCard = _playerCards[i];
-            GameObject playerCardCopy = playerCardsCopies[i];
-            Vector3 newCardPosition = playerCardCopy.transform.position;
-            LayoutElement originalCardLayoutElement = playerCard.GetComponent<LayoutElement>();
+            var playerCard = _playerCards[i];
+            var playerCardCopy = playerCardsCopies[i];
+            var newCardPosition = playerCardCopy.transform.position;
+            var originalCardLayoutElement = playerCard.GetComponent<LayoutElement>();
             
             originalCardLayoutElement.ignoreLayout = true;
             
             LeanTween.cancel(playerCard);
 
-            Transform playerCardParent = playerCard.transform.parent;
-            bool belongsToTheDeck = playerCardParent.Equals(gameObject.transform);
-            float animationSpeed = belongsToTheDeck ? _cardMovementAnimationSpeed : _cardTransferAnimationSpeed;
+            var playerCardParent = playerCard.transform.parent;
+            var belongsToTheDeck = playerCardParent.Equals(gameObject.transform);
+            var animationSpeed = belongsToTheDeck ? CardMovementAnimationSpeed : CardTransferAnimationSpeed;
 
-            LeanTween.move(playerCard, newCardPosition, _cardTransferAnimationSpeed);
-            RotateCard(playerCard, newCardPosition, 270, _cardTransferAnimationSpeed);
+            LeanTween.move(playerCard, newCardPosition, CardTransferAnimationSpeed);
+            RotateCard(playerCard, newCardPosition, 270, CardTransferAnimationSpeed);
             
             yield return new WaitForSeconds(animationSpeed);
 
@@ -196,19 +193,19 @@ public class PlayerHand : MonoBehaviour
 
     private float GetCardMarginY(int cardIndex, int totalCards, float cardMargin)
     {
-        int lastIndex = totalCards - 1;
+        var lastIndex = totalCards - 1;
 
         if (cardIndex == 0 || cardIndex == lastIndex)
         {
             return 0;
         }
 
-        int middleIndex = totalCards / 2;
-        bool isNumCardsEven = totalCards % 2 == 0;
+        var middleIndex = totalCards / 2;
+        var isNumCardsEven = totalCards % 2 == 0;
 
         if (isNumCardsEven)
         {
-            int additionalMiddleIndex = middleIndex - 1;
+            var additionalMiddleIndex = middleIndex - 1;
 
             if (cardIndex == additionalMiddleIndex || cardIndex == middleIndex)
             {
@@ -227,10 +224,10 @@ public class PlayerHand : MonoBehaviour
     
     private void RotateCard(GameObject card, Vector3 cardPosition, float rotationAdjustment, float animationSpeed)
     {
-        Vector3 relativePos = _cardsRotationPivot - cardPosition;
-        float angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - rotationAdjustment;
-        Quaternion angleAxis = Quaternion.AngleAxis(angle, Vector3.forward);
-        Vector3 eulerAngles = angleAxis.eulerAngles;
+        var relativePos = _cardsRotationPivot - cardPosition;
+        var angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - rotationAdjustment;
+        var angleAxis = Quaternion.AngleAxis(angle, Vector3.forward);
+        var eulerAngles = angleAxis.eulerAngles;
 
         LeanTween.rotate(card, eulerAngles, animationSpeed);
     }
@@ -241,7 +238,7 @@ public class PlayerHand : MonoBehaviour
         _cardDeck = cardDeckGameObject.GetComponent<CardDeck>();
         _cardsMovementPivot = new Vector3(gameObject.transform.position.x, -300);
         _cardsRotationPivot = new Vector3(_cardsMovementPivot.x, _cardsMovementPivot.y - 300);
-        _maxCardsInHand = Utilities.GetRandomNumberInRange(_minCards, _maxCards);
+        _maxCardsInHand = Utilities.GetRandomNumberInRange(MinCards, MaxCards);
     }
 
     // Update is called once per frame

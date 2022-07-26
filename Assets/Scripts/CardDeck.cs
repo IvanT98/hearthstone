@@ -7,9 +7,12 @@ public class CardDeck : MonoBehaviour
 {
     public GameObject card;
 
-    private int _maxCards = 40;
+    private const int MaxCards = 40;
+    private const int MaxCardRandomMana = 10;
+    private const int MaxCardRandomHealth = 30;
+    private const int MaxCardRandomAttack = 10;
     private AssetManager _assetManager;
-    private List<string> _cardTitles = new List<string>(new []
+    private readonly List<string> _cardTitles = new(new []
     {
         "Irondeep Trogg",
         "Murloc Tidecaller",
@@ -27,7 +30,7 @@ public class CardDeck : MonoBehaviour
         "Abusive Sergeant",
         "Loot Hoarder"
     });
-    private List<string> _cardDescriptions = new List<string>(new []
+    private readonly List<string> _cardDescriptions = new(new []
     {
         "After your opponent casts a spell, summon another Irondeep Trogg",
         "Whenever you summon a Murloc, gain +1 Attack",
@@ -45,8 +48,8 @@ public class CardDeck : MonoBehaviour
         "Battlecry: Give a minion +2 Attack this turn",
         "Deathrattle: Draw a card"
     });
-    private List<GameObject> _cardsGameObjects = new List<GameObject>();
-    private bool _wereCardsCreated = false;
+    private readonly List<GameObject> _cardsGameObjects = new();
+    private bool _wereCardsCreated;
 
     public bool WereCardsCreated()
     {
@@ -75,20 +78,20 @@ public class CardDeck : MonoBehaviour
             return;
         }
 
-        GameObject cardInstance = Instantiate(card, new Vector2(0, 0), Quaternion.identity);
-        Card cardComponent = cardInstance.GetComponent<Card>();
+        var cardInstance = Instantiate(card, new Vector2(0, 0), Quaternion.identity);
+        var cardComponent = cardInstance.GetComponent<Card>();
             
         cardComponent.SetCardTitle(GetCardTitle());
         cardComponent.SetCardDescription(GetCardDescription());
         cardComponent.SetCardImage(_assetManager.GetRandomImage());
-        cardComponent.SetCardMana(GetCardMana());
-        cardComponent.SetCardAttack(GetCardAttack());
-        cardComponent.SetCardHealth(GetCardHealth());
+        cardComponent.SetCardMana(GetRandomCardMana());
+        cardComponent.SetCardAttack(GetRandomCardAttack());
+        cardComponent.SetCardHealth(GetRandomCardHealth());
             
         cardInstance.transform.SetParent(gameObject.transform);
         
         _cardsGameObjects.Add(cardInstance);
-        _wereCardsCreated = _cardsGameObjects.Count >= _maxCards;
+        _wereCardsCreated = _cardsGameObjects.Count >= MaxCards;
     }
 
     private string GetCardTitle()
@@ -101,22 +104,21 @@ public class CardDeck : MonoBehaviour
         return _cardDescriptions[Utilities.GetRandomListIndex(_cardDescriptions.Count)];
     }
 
-    private int GetCardMana()
+    private static int GetRandomCardMana()
     {
-        return Utilities.GetRandomNumber(10);
+        return Utilities.GetRandomNumber(MaxCardRandomMana);
     }
 
-    private int GetCardAttack()
+    private static int GetRandomCardAttack()
     {
-        return Utilities.GetRandomNumber(10);
+        return Utilities.GetRandomNumber(MaxCardRandomAttack);
     }
 
-    private int GetCardHealth()
+    private static int GetRandomCardHealth()
     {
-        return Utilities.GetRandomNumber(30);
+        return Utilities.GetRandomNumber(MaxCardRandomHealth);
     }
-
-    // Start is called before the first frame update
+    
     private void Start()
     {
         _assetManager = EventSystem.current.GetComponent(typeof(AssetManager)) as AssetManager;

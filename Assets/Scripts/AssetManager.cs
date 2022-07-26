@@ -6,38 +6,27 @@ using UnityEngine.Networking;
 
 public class AssetManager : MonoBehaviour
 {
-    public List<Sprite> _randomImages;
-    private string _hostUrl = "https://picsum.photos";
-    private int _imageWidth = 100;
-    private int _imageHeight = 100;
-    private int _maxImages = 50;
+    private readonly List<Sprite> _randomImages = new();
+    private const string HostUrl = "https://picsum.photos";
+    private const int ImageWidth = 100;
+    private const int ImageHeight = 100;
+    private const int MaxImages = 50;
 
     public Sprite GetRandomImage()
     {
-        if (_randomImages.Count == 0)
-        {
-            return null;
-        }
-        
-        return _randomImages[Utilities.GetRandomListIndex(_randomImages.Count)];
-    }
-
-    // Start is called before the first frame update
-    private void Start()
-    {
-        GetImages();
+        return _randomImages.Count == 0 ? null : _randomImages[Utilities.GetRandomListIndex(_randomImages.Count)];
     }
 
     public bool WereImagesFetched()
     {
-        return _randomImages.Count == _maxImages;
+        return _randomImages.Count == MaxImages;
     }
 
     private void GetImages()
     {
-        string fullUrl = $"{_hostUrl}/{_imageWidth}/{_imageHeight}";
+        var fullUrl = $"{HostUrl}/{ImageWidth}/{ImageHeight}";
         
-        for (int i = 0; i < _maxImages; i++)
+        for (var i = 0; i < MaxImages; i++)
         {
             StartCoroutine(GetImage(fullUrl));
         }
@@ -45,19 +34,22 @@ public class AssetManager : MonoBehaviour
 
     private IEnumerator GetImage(String url)
     {
-        using (UnityWebRequest request = UnityWebRequestTexture.GetTexture(url))
+        using var request = UnityWebRequestTexture.GetTexture(url);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
         {
-            yield return request.SendWebRequest();
-
-            if (request.result != UnityWebRequest.Result.Success)
-            {
-                throw new Exception($"An error has occured while trying to fetch an image from the specified host. The error was '{request.error}'");
-            }
-
-            Texture2D texture = DownloadHandlerTexture.GetContent(request);
-            Sprite sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
-        
-            _randomImages.Add(sprite);
+            throw new Exception($"An error has occured while trying to fetch an image from the specified host. The error was '{request.error}'");
         }
+
+        var texture = DownloadHandlerTexture.GetContent(request);
+        var sprite = Sprite.Create(texture, new Rect(0.0f, 0.0f, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100.0f);
+        
+        _randomImages.Add(sprite);
+    }
+    
+    private void Start()
+    {
+        GetImages();
     }
 }

@@ -2,22 +2,21 @@ using System;
 
 public static class Utilities
 {
-    private static readonly Random _random = new Random();
+    private static readonly Random Random = new();
+    private const int MinimumRandomNumber = 1;
 
     public static int GetRandomListIndex(int listSize)
     {
-        int randomIndex = _random.Next(listSize);
-
-        return randomIndex;
+        return Random.Next(listSize);;
     }
 
     public static int GetRandomNumber(int max)
     {
-        return _random.Next(1, max);
+        return Random.Next(MinimumRandomNumber, max);
     }
     
     public static int GetRandomNumberInRange(int min, int max)
     {
-        return _random.Next(min, max);
+        return Random.Next(min, max);
     }
 }

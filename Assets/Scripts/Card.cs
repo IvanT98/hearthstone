@@ -5,7 +5,6 @@ using TMPro;
 
 public class Card : MonoBehaviour
 {
-    // UI
     public GameObject cardFront;
     public GameObject cardBack;
     public Image cardImage;
@@ -14,14 +13,15 @@ public class Card : MonoBehaviour
     public TMP_Text cardMana;
     public TMP_Text cardAttack;
     public TMP_Text cardHealth;
-
-    // Card properties
+    
     private Sprite _image;
     private string _title = "Title";
     private string _description = "Description";
     private int _mana = 1;
     private int _attack = 1;
     private int _health = 1;
+    
+    private const float CountDownAnimationSpeed = 0.25f;
 
     public void SetCardImage(Sprite sprite)
     {
@@ -61,7 +61,7 @@ public class Card : MonoBehaviour
 
     public void FlipCard()
     {
-        bool isBackShown = cardBack.activeSelf;
+        var isBackShown = cardBack.activeSelf;
 
         if (isBackShown)
         {
@@ -77,102 +77,50 @@ public class Card : MonoBehaviour
 
     public IEnumerator SetRandomProperty()
     {
-        float countDownSpeed = 0.25f;
-        int cardPropertySelector = Utilities.GetRandomNumberInRange(1, 3);
-        int randomNumberInRange = Utilities.GetRandomNumberInRange(-2, 9);
-
-        if (cardPropertySelector == 1)
+        var cardPropertySelector = Utilities.GetRandomNumberInRange(1, 3);
+        var randomNumberInRange = Utilities.GetRandomNumberInRange(-2, 9);
+        var selectedProperty = cardPropertySelector switch
         {
-            if (randomNumberInRange == _mana)
-            {
-                yield break;
-            }
-            
-            bool newValueGreater = randomNumberInRange > _mana;
-
-            if (newValueGreater)
-            {
-                while (_mana < randomNumberInRange)
-                {
-                    _mana += 1;
-                    SetCardMana(_mana);
-
-                    yield return new WaitForSeconds(countDownSpeed);
-                }
-            }
-            else
-            {
-                while (_mana > randomNumberInRange)
-                {
-                    _mana -= 1;
-                    SetCardMana(_mana);
-
-                    yield return new WaitForSeconds(countDownSpeed);
-                }
-            }
-            
-            yield break;
-        }
-
-        if (cardPropertySelector == 2)
+            1 => "_mana",
+            2 => "_health",
+            _ => "_attack"
+        };
+        var currentValue = selectedProperty switch
         {
-            if (randomNumberInRange == _health)
-            {
-                yield break;
-            }
-            
-            bool newValueGreater = randomNumberInRange > _health;
+            "_mana" => _mana,
+            "_health" => _health,
+            _ => _attack
+        };
 
-            if (newValueGreater)
-            {
-                while (_health < randomNumberInRange)
-                {
-                    _health += 1;
-                    SetCardHealth(_health);
-
-                    yield return new WaitForSeconds(countDownSpeed);
-                }
-            }
-            else
-            {
-                while (_health > randomNumberInRange)
-                {
-                    _health -= 1;
-                    SetCardHealth(_health);
-
-                    yield return new WaitForSeconds(countDownSpeed);
-                }
-            }
-            
+        if (randomNumberInRange == currentValue)
+        {
             yield break;
         }
         
-        if (randomNumberInRange == _attack)
-        {
-            yield break;
-        }
-            
-        bool IsNewValueGreater = randomNumberInRange > _attack;
+        var newValueGreater = randomNumberInRange > currentValue;
+        var changePropertyValueCondition =  true;
 
-        if (IsNewValueGreater)
+        while (changePropertyValueCondition)
         {
-            while (_attack < randomNumberInRange)
+            currentValue = newValueGreater ? currentValue + 1 : currentValue - 1;
+
+            switch (selectedProperty)
             {
-                _attack += 1;
-                SetCardAttack(_attack);
-
-                yield return new WaitForSeconds(countDownSpeed);
+                case "_mana":
+                    SetCardMana(currentValue);
+                    break;
+                case "_health":
+                    SetCardHealth(currentValue);
+                    break;
+                default:
+                    SetCardAttack(currentValue);
+                    break;
             }
-        }
-        else
-        {
-            while (_attack > randomNumberInRange)
-            {
-                _attack -= 1;
-                SetCardAttack(_attack);
 
-                yield return new WaitForSeconds(countDownSpeed);
-            }
+            yield return new WaitForSeconds(CountDownAnimationSpeed);
+
+            changePropertyValueCondition =
+                newValueGreater ? currentValue < randomNumberInRange : currentValue > randomNumberInRange;
         }
     }
 
@@ -185,8 +133,7 @@ public class Card : MonoBehaviour
         
         Destroy(gameObject);
     }
-
-    // Start is called before the first frame update
+    
     private void Start()
     {
         cardTitle.SetText(_title);
@@ -200,5 +147,4 @@ public class Card : MonoBehaviour
     {
         CheckIfShouldBeDestroyed();
     }
-    
 }
