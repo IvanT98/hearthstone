@@ -3,8 +3,12 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+/// <summary>
+/// Describes a playable card and handles any of it's UI changes.
+/// </summary>
 public class Card : MonoBehaviour
 {
+    // UI
     public GameObject cardFront;
     public GameObject cardBack;
     public Image cardImage;
@@ -14,51 +18,94 @@ public class Card : MonoBehaviour
     public TMP_Text cardAttack;
     public TMP_Text cardHealth;
     
+    private const float CountDownAnimationSpeed = 0.25f;
+    private const int MinimumRandomValue = -2;
+    private const int MaximumRandomValue = 9;
+    private const int MinimumCardHealth = 0;
+    
+    // Card attributes
     private Sprite _image;
     private string _title = "Title";
     private string _description = "Description";
     private int _mana = 1;
     private int _attack = 1;
     private int _health = 1;
-    
-    private const float CountDownAnimationSpeed = 0.25f;
 
+    /// <summary>
+    /// Setter for the card image.
+    ///
+    /// Sets both the card property and the UI.
+    /// </summary>
+    /// <param name="sprite">New card image.</param>
     public void SetCardImage(Sprite sprite)
     {
         _image = sprite;
         cardImage.sprite = _image;
     }
 
+    /// <summary>
+    /// Setter for the card title.
+    ///
+    /// Sets both the card property and the UI.
+    /// </summary>
+    /// <param name="title">New card title.</param>
     public void SetCardTitle(string title)
     {
         _title = title;
         cardTitle.SetText(_title);
     }
 
+    /// <summary>
+    /// Setter for the card description.
+    ///
+    /// Sets both the card property and the UI.
+    /// </summary>
+    /// <param name="description">New card description.</param>
     public void SetCardDescription(string description)
     {
         _description = description;
         cardDescription.SetText(_description);
     }
 
+    /// <summary>
+    /// Setter for the card mana.
+    ///
+    /// Sets both the card property and the UI.
+    /// </summary>
+    /// <param name="mana">New card mana.</param>
     public void SetCardMana(int mana)
     {
         _mana = mana;
         cardMana.SetText(_mana.ToString());
     }
 
+    /// <summary>
+    /// Setter for the card attack.
+    ///
+    /// Sets both the card property and the UI.
+    /// </summary>
+    /// <param name="attack">New card attack.</param>
     public void SetCardAttack(int attack)
     {
         _attack = attack;
         cardAttack.SetText(_attack.ToString());
     }
     
+    /// <summary>
+    /// Setter for the card health.
+    ///
+    /// Sets both the card property and the UI.
+    /// </summary>
+    /// <param name="health">New card health.</param>
     public void SetCardHealth(int health)
     {
         _health = health;
         cardHealth.SetText(_health.ToString());
     }
 
+    /// <summary>
+    /// Turns the card over.
+    /// </summary>
     public void FlipCard()
     {
         var isBackShown = cardBack.activeSelf;
@@ -75,10 +122,14 @@ public class Card : MonoBehaviour
         cardBack.SetActive(true);
     }
 
+    /// <summary>
+    /// Sets one random property of the card and executes a countdown animation for the new property value.
+    /// </summary>
+    /// <returns>IEnumerator to allow waiting for the countdown animation to finish</returns>
     public IEnumerator SetRandomProperty()
     {
         var cardPropertySelector = Utilities.GetRandomNumberInRange(1, 3);
-        var randomNumberInRange = Utilities.GetRandomNumberInRange(-2, 9);
+        var randomNumberInRange = Utilities.GetRandomNumberInRange(MinimumRandomValue, MaximumRandomValue);
         var selectedProperty = cardPropertySelector switch
         {
             1 => "_mana",
@@ -124,9 +175,12 @@ public class Card : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Destroys the card if it's health reaches below the minimum.
+    /// </summary>
     private void CheckIfShouldBeDestroyed()
     {
-        if (_health > 0)
+        if (_health > MinimumCardHealth)
         {
             return;
         }
@@ -134,6 +188,9 @@ public class Card : MonoBehaviour
         Destroy(gameObject);
     }
     
+    /// <summary>
+    /// Set the card UI to match the card properties.
+    /// </summary>
     private void Start()
     {
         cardTitle.SetText(_title);
@@ -143,6 +200,9 @@ public class Card : MonoBehaviour
         cardHealth.SetText(_health.ToString());
     }
 
+    /// <summary>
+    /// Checks if the card should be destroyed.
+    /// </summary>
     private void Update()
     {
         CheckIfShouldBeDestroyed();
