@@ -3,6 +3,9 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// Responsible for creating and maintaining a pool of playable cards.
+/// </summary>
 public class CardDeck : MonoBehaviour
 {
     public GameObject card;
@@ -51,12 +54,19 @@ public class CardDeck : MonoBehaviour
     private readonly List<GameObject> _cardsGameObjects = new();
     private bool _wereCardsCreated;
 
+    /// <summary>
+    /// Getter for the _wereCardsCreated flag.
+    /// </summary>
+    /// <returns>true if maximum amount of cards were created, otherwise false.</returns>
     public bool WereCardsCreated()
     {
         return _wereCardsCreated;
     }
 
-
+    /// <summary>
+    /// Removes one card from the deck.
+    /// </summary>
+    /// <returns>Removed card instance.</returns>
     public GameObject TakeCard()
     {
         if (!WereCardsCreated() || _cardsGameObjects.Count == 0)
@@ -71,6 +81,10 @@ public class CardDeck : MonoBehaviour
         return cardInstance;
     }
 
+    
+    /// <summary>
+    /// Adds cards to the deck.
+    /// </summary>
     private void PopulateDeck()
     {
         if (WereCardsCreated() || !_assetManager.WereImagesFetched())
@@ -81,8 +95,8 @@ public class CardDeck : MonoBehaviour
         var cardInstance = Instantiate(card, new Vector2(0, 0), Quaternion.identity);
         var cardComponent = cardInstance.GetComponent<Card>();
             
-        cardComponent.SetCardTitle(GetCardTitle());
-        cardComponent.SetCardDescription(GetCardDescription());
+        cardComponent.SetCardTitle(GetRandomCardTitle());
+        cardComponent.SetCardDescription(GetRandomCardDescription());
         cardComponent.SetCardImage(_assetManager.GetRandomImage());
         cardComponent.SetCardMana(GetRandomCardMana());
         cardComponent.SetCardAttack(GetRandomCardAttack());
@@ -94,36 +108,63 @@ public class CardDeck : MonoBehaviour
         _wereCardsCreated = _cardsGameObjects.Count >= MaxCards;
     }
 
-    private string GetCardTitle()
+    /// <summary>
+    /// Getter for random card title.
+    /// </summary>
+    /// <returns>Random card title.</returns>
+    private string GetRandomCardTitle()
     {
         return _cardTitles[Utilities.GetRandomListIndex(_cardTitles.Count)];
     }
     
-    private string GetCardDescription()
+    /// <summary>
+    /// Getter for random card description.
+    /// </summary>
+    /// <returns>Random card description.</returns>
+    private string GetRandomCardDescription()
     {
         return _cardDescriptions[Utilities.GetRandomListIndex(_cardDescriptions.Count)];
     }
 
+    /// <summary>
+    /// Getter for random card mana value.
+    /// </summary>
+    /// <returns>Random card mana value.</returns>
     private static int GetRandomCardMana()
     {
         return Utilities.GetRandomNumber(MaxCardRandomMana);
     }
 
+    /// <summary>
+    /// Getter for random card attack value.
+    /// </summary>
+    /// <returns>Random card attack value.</returns>
     private static int GetRandomCardAttack()
     {
         return Utilities.GetRandomNumber(MaxCardRandomAttack);
     }
 
+    
+    /// <summary>
+    /// Getter for random card health value.
+    /// </summary>
+    /// <returns>Random card health value.</returns>
     private static int GetRandomCardHealth()
     {
         return Utilities.GetRandomNumber(MaxCardRandomHealth);
     }
     
+    /// <summary>
+    /// Retrieves an instance of the asset manager.
+    /// </summary>
     private void Start()
     {
         _assetManager = EventSystem.current.GetComponent(typeof(AssetManager)) as AssetManager;
     }
 
+    /// <summary>
+    /// Starts card creation.
+    /// </summary>
     private void Update()
     {
         PopulateDeck();
