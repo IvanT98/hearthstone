@@ -43,6 +43,7 @@ public class PlayerHand : MonoBehaviour
     /// <returns>IEnumerator to allow waiting for the card animations to complete.</returns>
     private IEnumerator DoRandomIteration()
     {
+        // If the random iteration is not enabled or a random iteration is currently running, exit.
         if (!_randomIterationEnabled || _currentlyIterating)
         {
             yield break;
@@ -52,6 +53,8 @@ public class PlayerHand : MonoBehaviour
         
         var cardGameObject = GetNextCard();
     
+        // If no next card can found, it means that no cards remain in the player's hand..
+        // In this case we stop the iteration and disable it.
         if (!cardGameObject)
         {
             _currentlyIterating = false;
@@ -64,6 +67,9 @@ public class PlayerHand : MonoBehaviour
         
         yield return card.SetRandomProperty();
     
+        // If the card was destroyed after setting the random property,
+        // it means that the card's health dropped below 0.
+        // In this case, we remove the card from the player's hand list and reposition the remaining cards.
         if (!card)
         {
             _playerCards.RemoveAt(_currentlyIteratedCardIndex);
@@ -87,6 +93,7 @@ public class PlayerHand : MonoBehaviour
     /// <returns>Next card in the player's hand.</returns>
     private GameObject GetNextCard()
     {
+        // If the player has no cards, return nothing.
         if (_playerCards.Count == 0)
         {
             _currentlyIteratedCardIndex = -1;
@@ -96,6 +103,7 @@ public class PlayerHand : MonoBehaviour
     
         _currentlyIteratedCardIndex += 1;
     
+        // If the end of the player's cards was reached, start from the beginning.
         if (_currentlyIteratedCardIndex >= _playerCards.Count)
         {
             _currentlyIteratedCardIndex = 0;
@@ -112,6 +120,10 @@ public class PlayerHand : MonoBehaviour
     /// <returns>IEnumerator to allow waiting for the card animations to complete.</returns>
     private IEnumerator TakeCard()
     {
+        // If a card is already being taken,
+        // or player's card were already retrieved,
+        // or the card deck was not yet created,
+        // exit.
         if (_isTakingACard || _wereCardsRetrieved || !_cardDeck.WereCardsCreated())
         {
             yield break;
@@ -121,6 +133,8 @@ public class PlayerHand : MonoBehaviour
 
         var card = _cardDeck.TakeCard();
 
+        // If the no card was taken, this means that the card deck has no cards remaining.
+        // In this case we stop player's hand cards retrieval and exit.
         if (!card)
         {
             _wereCardsRetrieved = true;
@@ -153,12 +167,18 @@ public class PlayerHand : MonoBehaviour
     
     /// <summary>
     /// Moves the player's hands cards to always keep them centered.
+    ///
+    /// The algorithm for moving the cards is:
+    /// 1. Create an invisible copies of current cards that will follow the horizontal layout for x-axis positioning.
+    /// 2. Set the y-alignment of the copied cards.
+    /// 3. Replace the copied cards with original cards. Tweens are used for smoother transition.
     /// </summary>
     /// <returns>IEnumerator to allow waiting for the card animations to complete.</returns>
     private IEnumerator RepositionCards()
     {
         var playerCardsCopies = new List<GameObject>();
 
+        // Create invisible card copies.
         foreach (var playerCard in _playerCards)
         {
             GameObject playerCardCopy = Instantiate(playerCard, gameObject.transform);
@@ -173,8 +193,10 @@ public class PlayerHand : MonoBehaviour
             playerCardsCopies.Add(playerCardCopy);
         }
         
+        // Wait for the horizontal layout to adjust.
         yield return new WaitForSeconds(0.1f);
 
+        // Set the y-axis alignment of the copied cards.
         for (var i = 0; i < playerCardsCopies.Count; i++)
         {
             var playerCardCopy = playerCardsCopies[i];
@@ -188,6 +210,7 @@ public class PlayerHand : MonoBehaviour
             playerCardCopy.transform.position = new Vector3(cardPosition.x, cardPosition.y + cardMarginY, 0);
         }
 
+        // Move the original cards to the position of copied cards.
         for (var i = 0; i < playerCardsCopies.Count; i++)
         {
             var playerCard = _playerCards[i];
@@ -214,6 +237,7 @@ public class PlayerHand : MonoBehaviour
             }
         }
 
+        // Destroy the copies.
         foreach (var playerCardsCopy in playerCardsCopies)
         {
             Destroy(playerCardsCopy);
@@ -231,6 +255,7 @@ public class PlayerHand : MonoBehaviour
         var totalCards = _playerCards.Count;
         var lastIndex = totalCards - 1;
 
+        // If the card is either first or last, it will have a 0 y-margin.
         if (cardIndex == 0 || cardIndex == lastIndex)
         {
             return 0;
@@ -239,6 +264,7 @@ public class PlayerHand : MonoBehaviour
         var middleIndex = totalCards / 2;
         var isNumCardsEven = totalCards % 2 == 0;
 
+        // If the number of cards is even, two middle cards will have the same margin.
         if (isNumCardsEven)
         {
             var additionalMiddleIndex = middleIndex - 1;
