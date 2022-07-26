@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Responsible for maintaining and displaying cards in the player's hand.
+/// </summary>
 public class PlayerHand : MonoBehaviour
 {
     public GameObject cardDeckGameObject;
@@ -16,6 +19,7 @@ public class PlayerHand : MonoBehaviour
     private bool _isTakingACard;
     private const float CardTransferAnimationSpeed = 1;
     private const float CardMovementAnimationSpeed = 0.1f;
+    private const int CardRotationAdjustmentDegrees = 270;
     private Vector3 _lastCardPosition;
     private const float CardMarginY = 10;
     private Vector3 _cardsMovementPivot;
@@ -24,11 +28,19 @@ public class PlayerHand : MonoBehaviour
     private int _currentlyIteratedCardIndex = -1;
     private bool _currentlyIterating;
 
+    /// <summary>
+    /// Starts the random iteration of card properties.
+    /// The iteration goes clockwise, from left to right.
+    /// </summary>
     public void StartRandomIteration()
     {
         _randomIterationEnabled = true;
     }
     
+    /// <summary>
+    /// Performs a single step of random card properties iteration.
+    /// </summary>
+    /// <returns>IEnumerator to allow waiting for the card animations to complete.</returns>
     private IEnumerator DoRandomIteration()
     {
         if (!_randomIterationEnabled || _currentlyIterating)
@@ -69,6 +81,10 @@ public class PlayerHand : MonoBehaviour
         _currentlyIterating = false;
     }
     
+    /// <summary>
+    /// Gets the next card in the player's hand.
+    /// </summary>
+    /// <returns>Next card in the player's hand.</returns>
     private GameObject GetNextCard()
     {
         if (_playerCards.Count == 0)
@@ -90,6 +106,10 @@ public class PlayerHand : MonoBehaviour
         return randomCard;
     }
 
+    /// <summary>
+    /// Takes a card from the card deck and transfers it to the player's hand.
+    /// </summary>
+    /// <returns>IEnumerator to allow waiting for the card animations to complete.</returns>
     private IEnumerator TakeCard()
     {
         if (_isTakingACard || _wereCardsRetrieved || !_cardDeck.WereCardsCreated())
@@ -115,6 +135,11 @@ public class PlayerHand : MonoBehaviour
         _isTakingACard = false;
     }
     
+    /// <summary>
+    /// Moves card from the card deck to the player's hand.
+    /// </summary>
+    /// <param name="cardObject">Card taken from the deck.</param>
+    /// <returns>IEnumerator to allow waiting for the card animations to complete.</returns>
     private IEnumerator MoveCard(GameObject cardObject)
     {
         var originalCard = cardObject.GetComponent<Card>();
@@ -126,6 +151,10 @@ public class PlayerHand : MonoBehaviour
         yield return RepositionCards();
     }
     
+    /// <summary>
+    /// Moves the player's hands cards to always keep them centered.
+    /// </summary>
+    /// <returns>IEnumerator to allow waiting for the card animations to complete.</returns>
     private IEnumerator RepositionCards()
     {
         var playerCardsCopies = new List<GameObject>();
@@ -153,7 +182,7 @@ public class PlayerHand : MonoBehaviour
 
             layoutElement.ignoreLayout = true;
             
-            var cardMarginY = GetCardMarginY(i, _playerCards.Count, CardMarginY);
+            var cardMarginY = GetCardMarginY(i);
             var cardPosition = playerCardCopy.transform.position;
             
             playerCardCopy.transform.position = new Vector3(cardPosition.x, cardPosition.y + cardMarginY, 0);
@@ -174,8 +203,8 @@ public class PlayerHand : MonoBehaviour
             var belongsToTheDeck = playerCardParent.Equals(gameObject.transform);
             var animationSpeed = belongsToTheDeck ? CardMovementAnimationSpeed : CardTransferAnimationSpeed;
 
-            LeanTween.move(playerCard, newCardPosition, CardTransferAnimationSpeed);
-            RotateCard(playerCard, newCardPosition, 270, CardTransferAnimationSpeed);
+            LeanTween.move(playerCard, newCardPosition, animationSpeed);
+            RotateCard(playerCard, newCardPosition, animationSpeed);
             
             yield return new WaitForSeconds(animationSpeed);
 
@@ -191,8 +220,15 @@ public class PlayerHand : MonoBehaviour
         }
     }
 
-    private float GetCardMarginY(int cardIndex, int totalCards, float cardMargin)
+    
+    /// <summary>
+    /// Calculates the y-axis margin for the given card based on it's position.
+    /// </summary>
+    /// <param name="cardIndex">The card position index.</param>
+    /// <returns>Calculated y-axis margin.</returns>
+    private float GetCardMarginY(int cardIndex)
     {
+        var totalCards = _playerCards.Count;
         var lastIndex = totalCards - 1;
 
         if (cardIndex == 0 || cardIndex == lastIndex)
@@ -209,30 +245,38 @@ public class PlayerHand : MonoBehaviour
 
             if (cardIndex == additionalMiddleIndex || cardIndex == middleIndex)
             {
-                return cardMargin * additionalMiddleIndex;
+                return CardMarginY * additionalMiddleIndex;
             }
         }
 
         if (cardIndex <= middleIndex)
         {
-            return cardMargin * cardIndex;
+            return CardMarginY * cardIndex;
         }
 
-        return cardMargin * (lastIndex - cardIndex);
+        return CardMarginY * (lastIndex - cardIndex);
     }
     
-    
-    private void RotateCard(GameObject card, Vector3 cardPosition, float rotationAdjustment, float animationSpeed)
+    /// <summary>
+    /// Rotates the given card to face the rotation pivot of the player's hand.
+    /// </summary>
+    /// <param name="card">Card to be rotated.</param>
+    /// <param name="cardPosition">Card current or future position. This position will be used to determine by how much the card should be rotated.</param>
+    /// <param name="animationSpeed">The card rotation animation speed in seconds.</param>
+    private void RotateCard(GameObject card, Vector3 cardPosition, float animationSpeed)
     {
         var relativePos = _cardsRotationPivot - cardPosition;
-        var angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - rotationAdjustment;
+        var angle = Mathf.Atan2(relativePos.y, relativePos.x) * Mathf.Rad2Deg - CardRotationAdjustmentDegrees;
         var angleAxis = Quaternion.AngleAxis(angle, Vector3.forward);
         var eulerAngles = angleAxis.eulerAngles;
 
         LeanTween.rotate(card, eulerAngles, animationSpeed);
     }
 
-    // Start is called before the first frame update
+    /// <summary>
+    /// Sets the required properties of the player's hand.
+    /// Determines the number of cards in the player's hand.
+    /// </summary>
     private void Start()
     {
         _cardDeck = cardDeckGameObject.GetComponent<CardDeck>();
@@ -241,7 +285,7 @@ public class PlayerHand : MonoBehaviour
         _maxCardsInHand = Utilities.GetRandomNumberInRange(MinCards, MaxCards);
     }
 
-    // Update is called once per frame
+    // Either takes a card from the card deck or performs a random card property value iteration.
     private void Update()
     {
         StartCoroutine(TakeCard());
