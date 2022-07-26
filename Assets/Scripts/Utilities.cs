@@ -15,4 +15,9 @@ public static class Utilities
     {
         return _random.Next(1, max);
     }
+    
+    public static int GetRandomNumberInRange(int min, int max)
+    {
+        return _random.Next(min, max);
+    }
 }
