@@ -26,71 +26,71 @@ public class PlayerHand : MonoBehaviour
     private int _currentlyIteratedCardIndex = -1;
     private bool _currentlyIterating = false;
 
-    // public void StartRandomIteration()
-    // {
-    //     _randomIterationEnabled = true;
-    // }
-    //
-    // private IEnumerator DoRandomIteration()
-    // {
-    //     if (!_randomIterationEnabled || _currentlyIterating)
-    //     {
-    //         yield break;
-    //     }
-    //     
-    //     _currentlyIterating = true;
-    //     
-    //     GameObject cardGameObject = GetNextCard();
-    //
-    //     if (!cardGameObject)
-    //     {
-    //         _currentlyIterating = false;
-    //         _randomIterationEnabled = false;
-    //         
-    //         yield break;
-    //     }
-    //
-    //     Card card = cardGameObject.GetComponent<Card>();
-    //     
-    //     yield return card.SetRandomProperty();
-    //
-    //     if (!card)
-    //     {
-    //         _playerCards.RemoveAt(_currentlyIteratedCardIndex);
-    //
-    //         _currentlyIteratedCardIndex -= 1;
-    //
-    //         if (_currentlyIteratedCardIndex < 0)
-    //         {
-    //             _currentlyIteratedCardIndex = 0;
-    //         }
-    //
-    //         yield return RepositionCards(_playerCards.Count, true, false);
-    //     }
-    //
-    //     _currentlyIterating = false;
-    // }
-    //
-    // private GameObject GetNextCard()
-    // {
-    //     if (_playerCards.Count == 0)
-    //     {
-    //         _currentlyIteratedCardIndex = -1;
-    //         
-    //         return null;
-    //     }
-    //
-    //     _currentlyIteratedCardIndex += 1;
-    //
-    //     if (_currentlyIteratedCardIndex >= _playerCards.Count)
-    //     {
-    //         _currentlyIteratedCardIndex = 0;
-    //     }
-    //     
-    //     GameObject randomCard = _playerCards[_currentlyIteratedCardIndex];
-    //
-    //     return randomCard;
-    // }
+    public void StartRandomIteration()
+    {
+        _randomIterationEnabled = true;
+    }
+    
+    private IEnumerator DoRandomIteration()
+    {
+        if (!_randomIterationEnabled || _currentlyIterating)
+        {
+            yield break;
+        }
+        
+        _currentlyIterating = true;
+        
+        GameObject cardGameObject = GetNextCard();
+    
+        if (!cardGameObject)
+        {
+            _currentlyIterating = false;
+            _randomIterationEnabled = false;
+            
+            yield break;
+        }
+    
+        Card card = cardGameObject.GetComponent<Card>();
+        
+        yield return card.SetRandomProperty();
+    
+        if (!card)
+        {
+            _playerCards.RemoveAt(_currentlyIteratedCardIndex);
+    
+            _currentlyIteratedCardIndex -= 1;
+    
+            if (_currentlyIteratedCardIndex < 0)
+            {
+                _currentlyIteratedCardIndex = 0;
+            }
+    
+            yield return RepositionCards();
+        }
+    
+        _currentlyIterating = false;
+    }
+    
+    private GameObject GetNextCard()
+    {
+        if (_playerCards.Count == 0)
+        {
+            _currentlyIteratedCardIndex = -1;
+            
+            return null;
+        }
+    
+        _currentlyIteratedCardIndex += 1;
+    
+        if (_currentlyIteratedCardIndex >= _playerCards.Count)
+        {
+            _currentlyIteratedCardIndex = 0;
+        }
+        
+        GameObject randomCard = _playerCards[_currentlyIteratedCardIndex];
+    
+        return randomCard;
+    }
 
     private IEnumerator TakeCard()
     {
@@ -248,6 +248,6 @@ public class PlayerHand : MonoBehaviour
     private void Update()
     {
         StartCoroutine(TakeCard());
-        // StartCoroutine(DoRandomIteration());
+        StartCoroutine(DoRandomIteration());
     }
 }
