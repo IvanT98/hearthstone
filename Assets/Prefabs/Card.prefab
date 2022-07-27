@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 6426658007813372121}
   - component: {fileID: 6426658007813372127}
   - component: {fileID: 6426658007813372120}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: CardFrontImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +87,7 @@ GameObject:
   - component: {fileID: 6426658007923395650}
   - component: {fileID: 6426658007923395648}
   - component: {fileID: 6426658007923395649}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Title
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -223,7 +223,7 @@ GameObject:
   - component: {fileID: 6426658007948937059}
   - component: {fileID: 6426658007948937116}
   - component: {fileID: 6426658007948937117}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: ImageMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -313,7 +313,7 @@ GameObject:
   - component: {fileID: 6426658008481367954}
   - component: {fileID: 6426658008481367952}
   - component: {fileID: 6426658008481367953}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: CardBackImage
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -389,7 +389,7 @@ GameObject:
   - component: {fileID: 6426658008490054746}
   - component: {fileID: 6426658008490054744}
   - component: {fileID: 6426658008490054745}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Description
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -524,7 +524,7 @@ GameObject:
   - component: {fileID: 6426658008659918497}
   - component: {fileID: 6426658008659918496}
   - component: {fileID: 5932606868074491796}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Card
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -604,7 +604,7 @@ GameObject:
   - component: {fileID: 6426658008748256990}
   - component: {fileID: 6426658008748256988}
   - component: {fileID: 6426658008748256989}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -737,7 +737,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6426658008881848365}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: CardBack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -776,7 +776,7 @@ GameObject:
   - component: {fileID: 6426658009326656543}
   - component: {fileID: 6426658009326656541}
   - component: {fileID: 6426658009326656542}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -852,7 +852,7 @@ GameObject:
   - component: {fileID: 6426658009481035576}
   - component: {fileID: 6426658009481035582}
   - component: {fileID: 6426658009481035583}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Mana
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -985,7 +985,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6426658009536084997}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: CardFront
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1030,7 +1030,7 @@ GameObject:
   - component: {fileID: 6426658009909425870}
   - component: {fileID: 6426658009909425868}
   - component: {fileID: 6426658009909425869}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Health
   m_TagString: Untagged
   m_Icon: {fileID: 0}

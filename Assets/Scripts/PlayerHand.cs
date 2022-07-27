@@ -185,10 +185,10 @@ public class PlayerHand : MonoBehaviour
             LayoutElement layoutElement = playerCardCopy.GetComponent<LayoutElement>();
 
             layoutElement.ignoreLayout = false;
+            
             Card card = playerCardCopy.GetComponent<Card>();
         
-            card.cardFront.SetActive(false);
-            card.cardBack.SetActive(false);
+            card.HideCard();
 
             playerCardsCopies.Add(playerCardCopy);
         }

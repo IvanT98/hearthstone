@@ -121,6 +121,15 @@ public class Card : MonoBehaviour
         cardFront.SetActive(false);
         cardBack.SetActive(true);
     }
+    
+    /// <summary>
+    /// Hides the card.
+    /// </summary>
+    public void HideCard()
+    {
+        cardFront.SetActive(false);
+        cardBack.SetActive(false);
+    }
 
     /// <summary>
     /// Sets one random property of the card and executes a countdown animation for the new property value.
