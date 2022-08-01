@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 /// <summary>
 /// Responsible for maintaining and displaying cards in the player's hand.
@@ -219,14 +220,12 @@ public class PlayerHand : MonoBehaviour
             var originalCardLayoutElement = playerCard.GetComponent<LayoutElement>();
             
             originalCardLayoutElement.ignoreLayout = true;
-            
-            LeanTween.cancel(playerCard);
 
             var playerCardParent = playerCard.transform.parent;
             var belongsToTheDeck = playerCardParent.Equals(gameObject.transform);
             var animationSpeed = belongsToTheDeck ? CardMovementAnimationSpeed : CardTransferAnimationSpeed;
 
-            LeanTween.move(playerCard, newCardPosition, animationSpeed);
+            playerCard.transform.DOMove(newCardPosition, animationSpeed);
             RotateCard(playerCard, newCardPosition, animationSpeed);
             
             yield return new WaitForSeconds(animationSpeed);
@@ -296,7 +295,7 @@ public class PlayerHand : MonoBehaviour
         var angleAxis = Quaternion.AngleAxis(angle, Vector3.forward);
         var eulerAngles = angleAxis.eulerAngles;
 
-        LeanTween.rotate(card, eulerAngles, animationSpeed);
+        card.transform.DORotate(eulerAngles, animationSpeed);
     }
 
     /// <summary>
